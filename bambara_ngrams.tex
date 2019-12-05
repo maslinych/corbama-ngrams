@@ -1,0 +1,208 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[style=authoryear]{biblatex}
+\usepackage[status=draft]{fixme}
+\fxsetup{theme=color}
+
+\author{Kirill Maslinsky}
+
+% FIXME: tentative title
+% \title{Word embeddings for Bambara: data and applications}
+\title{Positional skipgrams for Bambara: a resource for corpus-based studies}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  This paper describes data and experiments ...
+
+
+  Keywords: Bambara, corpus, n-grams, shared data
+\end{abstract}
+
+\section{Introduction}
+
+N-grams — fixed-length sequences of adjacent tokens collected from
+textual data — have been widely used in computational linguistics and
+natural language processing for decades. A frequency list of n-grams
+obtained from a corpus proved to be a simple yet powerful tool to
+represent contextual information and sequential phenomena in natural
+language.  The idea that is key to the practical success of n-grams in
+a wide variety of language modeling tasks (from spelling correction to
+speech recognition) is to extract the information encoded in the relative
+positioning of linguistic units into a list of easily quantified
+atomic “co-occurrence events”.
+
+Taken generally enough, the approach leaves room for flexibility in
+the way how to build n-grams, and what to include in them. Adjacency
+constraints can be relaxed to include items occurring anywhere within
+a fixed-width context window, thus producing \textit{skipgrams}. There
+is also no need to limit the scope to the lexical or graphical level,
+as in the traditional word n-grams and letter n-grams, or even to the
+surface level in general. In case if linguistic annotation is
+available for the text, it may be used for building n-grams. The most
+common example of the latter is to make n-grams from part of speech
+tags of subsequent words that reveal recurrent patterns in the surface
+syntax.  Thus n-grams can represent phenomena other than plain lexical
+co-occurrence.
+
+This article presents a new online dataset of linguistically rich
+n-gram frequency data for Bambara built on the basis of the
+disambiguated part of the Corpus Bambara de
+R\'ef\'erence\footnote{Corpus search interface as well as general info
+  about the corpus are available online at:
+  \url{http://cormand.huma-num.fr/}.}\fxerror{Cite?}. N-grams in this
+dataset were constructed with the aim to capture those types of
+information that are available in the morphologically annotated corpus
+of Bambara.  Beyond the usual lexical focus, n-grams were supplemented
+with the paradigmatic grammatical information and positional
+features\fxwarning{cues?} that should allow to make inferences about
+various aspects of morphosyntax. %based on feature co-occurrence data.
+
+Making this dataset publicly available is a way to provide access to
+the linguistic data derived from the full annotated corpus to the
+wider audience of students and researchers without disclosing
+copyright-protected texts. The data format has to be general enough to
+allow open-ended exploration and use of the data in broad areas of
+linguistic research, language learning, and downstream NLP tasks.  The
+n-grams list format, in my view, matches this objective and has an
+additional benefit of retaining readability by a human as well as a
+machine. While simple tabular format makes data easily quantifiable
+for research and engineering tasks, for a human reader, a
+frequency-ordered n-grams list preserves meaningful linguistic
+categories — lexemes, grammatical tags, and relative word positions in
+a sentence. % Which, I argue, make aggregated and comparative data
+% directly interpretable as to the morphosyntactic zones of interest\fxerror{Bzzzt!}
+
+% may direct/steer the search
+
+% structure of the article
+The article is structured as follows. In the sections
+\ref{sec:definition}--\ref{sec:data} the methodology and data used for
+constructing n-grams for Bambara are explained in some detail,
+followed by the section \ref{sec:applications} that provide brief
+illustrations on how the n-gram data presented here may be employed in
+corpus-based linguistic research, as well as a sample application for
+a natural language processing task — building a word-embedding model.
+
+\section{Positional Skipgrams}
+\label{sec:definition}
+
+\textit{Positional skipgrams} featuring in the title is a tentative
+label for the approach used in this article to combine lexical,
+grammatical, and positional information in a single n-gram framework.
+
+% SOURCE ANNOTATED DATA
+To understand their construction, 
+
+
+% comparable and interpretable lists
+
+% 
+
+that I tentatively call positional skipgrams for the lack of a better
+name.
+
+
+\section{Related work}
+
+% skipgram term (made popular by word2vec)
+
+% Syntactic n-grams Sidorov etc. and similar
+
+% Plehach — poetry
+
+% pedagogical resource for language learners (phraseology)
+
+\section{Data and methods}
+\label{sec:data}
+
+% corbama-net as a corpus
+
+% type of annotation, grammar lists
+
+% normalization: orthography; canonical lemma variants
+% FIXME: find a way to keep glosses in data?
+
+% variants of data: lemmatized; wordforms; morpheme-based(?)
+% sequences; tonal/non-tonal
+
+% war on sparsity
+
+% decisions on skipgrams building: to keep sparsity at a manageable
+% levels (not to make connections between too open classes)
+
+\section{Possible applications}
+\label{sec:applications}
+
+% meant as a demonstration
+
+\subsection{Positional distributions}
+
+
+\subsection{Stylometry}
+
+% cf. Sidorov ch. 6
+
+% newspapers vs. epic poetry
+
+\subsection{Word embeddings}
+
+% DISCUSSION — ?
+
+% extensive testing required to measure performance on various NLP
+% tasks (and to localize appropriately the sources of the gains)
+
+\section{Conclusion}
+
+Goals and uses of the published data: targeted linguistic explorations
+and comparisons, quantitative corpus-based research/data, further NLP
+applications. 
+
+As a tool to guide inquiry, a supplement to the standard
+concordancing, frequency-list building and collocation-list building.
+
+As quantitative data (with metadata) that enables testing hypotheses
+and building models based on lexico-grammatical distributions in
+various corpus parts. 
+
+As a resource to enable further NLP processing (training models
+etc.).
+
+make another way to access and play with corpus statistics in addition
+to the existing online search interface
+
+\end{document}
+
+%%% TRASH
+
+Such an inclusive view effectively allows to employ n-grams to
+
+analytical tasks appropriately formulated
+
+provides an aggregated presentation of
+meaningful linguistic information (preserving meaningful linguistic
+categories — lexemes, grammatical tags, and relative word
+positions in a sentence)
+
+
+was selected as matching this criterion and with
+two additional objectives in mind: to be machine-readable, and to
+retain readability by a human as well. 
+
+So that if research question can be cast as an appropriate filtering
+of n-gram frequencies 
+
+
+simple tabular format makes it 
+
+
+that hopefully 
+
+In an easily quantifiable and simultaneously interpretable manner.
+To retain readability by a human as well  as a machine. An aggregated
+presentation of meaningful linguistic information.
+
