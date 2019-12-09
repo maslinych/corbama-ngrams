@@ -6,7 +6,7 @@ $3 == "Tag" {next}
 /<\/doc>/ {next}
 { split($4, glosses, "|"); 
 	for (g in glosses) { 
-		if (glosses[g] ~ /^([0-9.]+)?[[:upper:]][[:upper:].0-9]+/ && glosses[g] != "CARDINAL") 
+		if (glosses[g] ~ /^([0-9.]+)?[[:upper:]][[:upper:].0-9]+$/ && glosses[g] != "CARDINAL") 
 		{ if (gram) { gram = gram "|" glosses[g] } else { gram = glosses[g] } }
 	} 
   if (gram == "") { gram = "_" }

@@ -114,7 +114,8 @@ defined for each token.
   {í       k'      à       dɔ́n     kó      nàta    \textbf{mùso}    tɛ      ná      ɲùman   tóbi    .}
   {pers    pm      pers    v       cop     n       n       pm      n       adj     v       c}
   {{} pm:-5 pers:-4 v:-3 cop:-2 n:-1 \textbf{n:0} pm:1 n:2 adj:3 v:4 c:5}
-  {2SG     SBJV    3SG     connaître       QUOT    cupidité        femme IPFV.NEG        sauce   bon     cuire   .}
+  {‘You should know that a greedy woman won't cook a good sauce’}
+    % 2SG     SBJV    3SG     connaître       QUOT    cupidité        femme IPFV.NEG        sauce   bon     cuire   .}
 \end{example}
 
 To generate a list of positional skipgrams out of this sentence words
@@ -397,6 +398,38 @@ field.
 \subsection{Positional distributions}
 
 % gosi—bugo
+% В качестве пар слов можно взять, во-1, те же самые bùgɔ и gòsi.
+
+% bùgɔ_v  v:0     187     188431  187
+% bùgɔ_v  pm:-2   187     146505  126
+% bùgɔ_v  pers:-1 187     179651  76
+% bùgɔ_v  c:1     187     130483  64
+% bùgɔ_v  pers:-3 187     145917  55
+% bùgɔ_v  3SG:-1  187     81640   43
+% bùgɔ_v  INF:-2  187     49982   42
+% bùgɔ_v  n:-1    187     309187  38
+
+% gòsi_v  v:0     285     188431  285
+% gòsi_v  pm:-2   285     146505  179
+% gòsi_v  n:-1    285     309187  91
+% gòsi_v  PFV.TR:-2       285     21125   84
+% gòsi_v  num:3   285     20081   75
+% gòsi_v  n.prop:-1       285     41012   74
+% gòsi_v  conj:2  285     45496   73
+% gòsi_v  pers:-1 285     179651  71
+
+for bugo, personal pronouns dominate over nouns in the previous
+position (direct object) 
+for gosi, the position of a direct object is much more equally distributed among n, n.prop, and pers
+
+affinity to the perfective construction for gosi, and infinitive
+construction for bugɔ
+
+
+% Ещё хорошая пара: dɔ́gɔman - mìsɛn "маленький" (или дериват последнего mìsɛnman - даже не знаю, что лучше. Или всю троицу?).
+% Или вот:
+% bèlebele - bònba (можно также  bèlebeleba) "большой".
+
 
 \subsection{Stylometry}
 
