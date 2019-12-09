@@ -1,10 +1,19 @@
 \documentclass[12pt]{article}
 
 \usepackage[utf8]{inputenc}
-\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[russian, english]{babel}
+\babeltags{ru = russian}
 \usepackage[style=authoryear]{biblatex}
+\usepackage[noglossbreaks]{covington}
+% \usepackage{lmodern}
+%\babelfont{rm}{DejaVu Serif}
+\babelfont{rm}{Gentium Basic}
+\babelfont{sf}{DejaVu Sans}
+
 \usepackage[status=draft]{fixme}
 \fxsetup{theme=color}
+
 
 \author{Kirill Maslinsky}
 
@@ -45,8 +54,8 @@ as in the traditional word n-grams and letter n-grams, or even to the
 surface level in general. In case if linguistic annotation is
 available for the text, it may be used for building n-grams. The most
 common example of the latter is to make n-grams from part of speech
-tags of subsequent words that reveal recurrent patterns in the surface
-syntax.  Thus n-grams can represent phenomena other than plain lexical
+tags of subsequent words that reveal recurrent word order patterns.
+Thus n-grams can represent phenomena other than plain lexical
 co-occurrence.
 
 This article presents a new online dataset of linguistically rich
@@ -75,7 +84,7 @@ for research and engineering tasks, for a human reader, a
 frequency-ordered n-grams list preserves meaningful linguistic
 categories — lexemes, grammatical tags, and relative word positions in
 a sentence. % Which, I argue, make aggregated and comparative data
-% directly interpretable as to the morphosyntactic zones of interest\fxerror{Bzzzt!}
+% directly interpretable as to the morphosyntactic zones of interest
 
 % may direct/steer the search
 
@@ -87,53 +96,295 @@ followed by the section \ref{sec:applications} that provide brief
 illustrations on how the n-gram data presented here may be employed in
 corpus-based linguistic research, as well as a sample application for
 a natural language processing task — building a word-embedding model.
+The closing section presents a discussion of...\fxerror{Bzzzt!}
+
 
 \section{Positional Skipgrams}
 \label{sec:definition}
 
-\textit{Positional skipgrams} featuring in the title is a tentative
-label for the approach used in this article to combine lexical,
-grammatical, and positional information in a single n-gram framework.
+The approach used in this article to combine lexical, grammatical, and
+positional information in a single n-gram framework is tentatively
+labeled here \textit{positional skipgrams}.  To make sense of this
+framework, consider a sentence in Bambara that has part of speech tags
+defined for each token.
 
-% SOURCE ANNOTATED DATA
-To understand their construction, 
+\begin{example}
+  \label{ex:muso}
+  \trigloss
+  {í       k'      à       dɔ́n     kó      nàta    \textbf{mùso}    tɛ      ná      ɲùman   tóbi    .}
+  {pers    pm      pers    v       cop     n       n       pm      n       adj     v       c}
+  {{} pm-5 pers-4 v-3 cop-2 n-1 \textbf{n0} pm1 n2 adj3 v4 c5}
+  {2SG     SBJV    3SG     connaître       QUOT    cupidité        femme IPFV.NEG        sauce   bon     cuire   .}
+\end{example}
 
+To generate a list of positional skipgrams out of this sentence words
+are taken one by one, and for each word, all part of speech tags that
+fall within the fixed-width context window (five words on each side in
+our example) are considered a co-occurrence. A numeric index is
+then appended to each tag reflecting its relative position to the
+current word, 1 meaning the next word to the right, -3 the third word
+on the left, and 0 being the word itself. All pairs of a word with 
+joined positional tags are then recorded to the list of n-grams. In our
+example, for the word \textit{mùso} the following n-grams will be
+generated: \textit{mùso--n0}, \textit{mùso--pm1}, \textit{mùso--n-1}, etc.
+Depending on the task at hand it may be convenient to record reverse
+co-occurrence events (\textit{pm1--mùso}, etc.) simultaneously to simplify
+further processing. 
 
-% comparable and interpretable lists
+Instead of tracking word co-occurrence events, positional skipgrams
+record the information on the occurrence of the word in a certain
+position in the surface syntactic structure, to the extent that
+syntactic information is reflected in the sequence of part of speech
+tags. As usual with n-grams, this positional occurrence is represented
+as a series of atomic “co-occurrence events”. In this representation,
+the structure of the context is lost, but the disparate events (words
+and sentences) thus become comparable. For example, two occurrences of
+a word can share a significant part of their positional skipgrams
+while not sharing that many context words. The same principle allows
+to compare different words by the similarity of their syntactic
+contexts (in terms of the relative frequencies of their positional
+collocates).
 
-% 
+% pair of sentences example: 
+% with the same key word, different but syntactically similar
+% contexts.
 
-that I tentatively call positional skipgrams for the lack of a better
-name.
+% EX2: with different words, similar tag distributions
+
+While the idea to append positional index to the collocate is all that
+is needed to define positional skipgrams in general, several other
+constraints should be observed to make them more relevant as
+linguistic data, as well as make sure that they are tractable in
+downstream computational tasks.\fxwarning{and computationally tractable?}
+
+\begin{enumerate}
+% * do not create lexical positions /sparse data/
+\item Note that in the examples above words are never included as
+  positional collocates to other words. While technically nothing
+  prevents us from doing so, the focus of the method is to relate
+  words to the underlying linguistic categories, and more generally,
+  recurrent phenomena at the non-lexical level.  Essentially, what we
+  are interested in is the type of contexts that words are likely to
+  \textit{share}.  Moreover, in a less-resourced setting where lexical
+  data are already sparse, multiplying the lexicon size by the
+  positional dimension would be clearly detrimental for the
+  statistical inference of any kind.
+% * do not cross sentence boundaries
+\item Since the positional part of speech tags are included as a proxy
+  for syntactic structure is it reasonable to require that n-grams do
+  not cross sentence boundaries.  At the same time, punctuation tokens
+  could be recorded as collocates to keep track of the relative
+  positions of the word in respect to sentence and clause boundaries
+  (for instance, the final stop in the example~\ref{ex:muso} that would
+  produce \textit{mùso--c5}).
+% * add tag—tag n-grams to keep track of just syntactic regularities
+\item To further compensate for the lexical sparsity it makes sense to
+  include n-grams consisting of two positional tags alongside
+  positional skipgrams with words. For instance, accumulating
+  frequency counts for \textit{n0--pm1} would help track the
+  fact that nouns tend to fill the position before the predicative
+  markers as an integral part of the data.
+\end{enumerate} 
 
 
 \section{Related work}
 
-% skipgram term (made popular by word2vec)
+% n-grams very traditional (Manning Shutze?)
+N-grams are among the earliest and the most widely used methods in the
+statistical language processing.  Statistics on n-grams of adjacent
+letters and phomenes proved useful for optical character recognition
+and speech recognition already in 1970s\fxerror{Ref: See Willett 1998}. By
+the 1990s, using n-grams of words was a well established technique in
+language modeling tasks, for example, for the part of speech
+tagging\fxerror{REF: TreeTagger} as well as for the more linguistically
+oriented tasks like collocation extraction\fxerror{REF: ..Manning 1999}.
 
-% Syntactic n-grams Sidorov etc. and similar
+Computational and conceptual simplicity of the “default” bi- and
+tri-grams of adjacent words favored their usage wherever the resulting
+model performance was acceptable. Yet it is clear that related words
+do not necessarily stand next to each other. With growing
+computational power and storage capacity the idea of using word
+\textit{skipgrams} was getting traction as a means to alleviate the
+problem of variability in the surface structures\fxerror{REF:
+  closer2006}. \textit{Concgrams}, suggested in ...\fxerror{REF?},
+abstracting away not only the distance between collocates, but also
+their relative order went even further in this direction. These
+generalizations of n-grams clearly widen the scope of syntactic
+phenomena n-grams are able to represent, but simultaneously introduce
+much more noise in the frequency data.
 
-% Plehach — poetry
+The “noise” here means unrelated or indirectly related words appearing
+together in the n-gram while n-grams carrying information on the
+meaningful regularities would constitute useful “signal”. The problem
+of noise is a direct consequence of the simplistic way of treating
+context relationships that reduces any syntactic structure to plain
+word sequence. Two opposite ways to maintain a decent signal to noise
+ratio in n-gram data can be attested in the recent literature. One way
+is to collect ever more data to let the noisy co-occurrences be
+dwarfed by the relevant ones. This became a trend after the advent of
+neural networks in language modeling that followed the success of
+word2vec\fxerror{REF: Mikolov 2013}. The other way is to reduce noise
+source in terms of the surface structure by adding more linguistic
+structure to the input data. An idea of building \textit{syntactic
+  n-grams} basing on relations in the syntactic tree rather than the
+word sequence is characteristic of this latter position\fxerror{REF:
+  Sidorov}. The downside of the first method is that it requires large
+amounts of textual data to be available for training. The obvious
+drawback of the second is that a reliable syntactic parser is required
+for it to work. Both are serious if not blocking limitations in the
+context of the low-resourced languages.
 
-% pedagogical resource for language learners (phraseology)
+The \textit{positional skipgrams} method suggested in this paper sits
+somewhere in between both of the above approaches in terms of
+balancing signal and noise in the n-gram data. Contrary to the
+word2vec way, positional skipgrams do require linguistically annotated
+data for the input, but the annotation can be rather shallow, like
+part of speech tags in the examples above.  By using tags and their
+relative positions the skipgrams are able to capture the signal on
+syntactic regularities from the tags that in their turn aggregate
+information from the dictionary and language knowledge by human
+annotators. That is exactly the kind of signal for which sparse
+lexical data would be insufficient in the absence of the huge training
+corpora. At the same time, given the current state of the art in part
+of speech tagging it seems reasonable to assume that such annotation
+can be obtained for significant amounts of text even for lower
+resourced languages. Collecting more annotated data can compensate for
+the noisy way of capturing morphosyntactic structures offered by
+n-grams. But given higher frequency and lower diversity of the part of
+speech tags signal can be expected to overcome noise much sooner
+compared to training on raw words.
 
-\section{Data and methods}
+To summarize, compared to other n-gram building methods positional
+skipgrams are characterized by the two distinct features:
+
+\begin{enumerate}
+% * positional (explicitly record position of a collocate relative to the
+% current word)
+\item They explicitly record the position of a collocate relative to
+  the current word. Common skipgram-based models may incorporate
+  positional information implicitly. In particular, it has been shown
+  that word2vec actually benefit from taking distances between words
+  into account by using the decreasing weight coefficient for more
+  distant words\fxerror{(see GOLDBERG)}. The closest to our approach
+  is the work by Ling et al. that included “what words go where” type
+  of information in addition to “what words go together” in word2vec
+  by creating separate models for each position of a context word
+  relative to the current word.\fxerror{REf: two simple}
+% * cross-level 
+\item Positional skipgrams as implemented in this article combine
+  features from two different levels of annotation in the form of
+  n-grams. This simple cross-level setup seems to be uncommon to the
+  applications of n-grams in recent literature on natural language
+  processing. Actually, the n-gram approach adopted in this article
+  was motivated by the example of the work of Petr Plech\'a\v{c} in
+  quantitative analysis of poetry, where n-grams combining phonemes with
+  their structural position in the verse line were used to represent
+  distribution of the phonemes for further modeling.\fxerror{Ref: FIND Plechac!}
+\end{enumerate}
+
+%% REFS
+
+% Applications of n‐grams in textual information systems
+% Alexander M. Robertson, Peter Willett 1998
+
+\section{Dataset description}
 \label{sec:data}
 
 % corbama-net as a corpus
+The dataset presented in this article is built using the manually
+disambiguated part of the Bambara Reference Corpus
+(corbama-net).\fxerror{Ref: BRC} As of December, 2019 the
+disambiguated subcorpus contains 1.3M words in 1650 documents. The
+corpus provides token-level morphological annotation as well as
+document-level metadata on the author, the source of the text, and
+several tags categorizing the medium, genre, and theme of the
+text.\fxerror{See details: Davydov} The annotation provided in the
+corpus was obtained using the morphological processor Daba based on
+the dictionary and the set of rules\fxerror{Ref: me} followed by the
+manual disambiguation by the Bambara-proficient
+operators.\fxwarning{Sounds like it was me who annotated it which is
+  not true}
 
 % type of annotation, grammar lists
+The annotation layers available in this subcorpus include the
+orthographically normalized token (part of the corpus is in the
+old\fxwarning{pre-1986?} Bambara orthography), lemma, part of speech
+tag, and a gloss (lexical equivalent) in French. For multi-morpeheme
+words there is also a recursive structure that annotates each morpheme
+with the similar attributes of a form, a part of speech tag, and a
+gloss. Grammatical morphemes, as well as standalone function words are
+assigned a Leipzig-style formal gloss from a standard list of glosses
+for Bambara\fxerror{Link: glosslist} instead of the French equivalent.
 
 % normalization: orthography; canonical lemma variants
+The main objective of publishing this dataset is to present
+quantitative data on morphosyntactic regularities and variation in the
+corpus. Hence other types of variation that are attested in the
+corpus, namely orthographic variation, dialectal variation, and tonal
+variation, are not represented. To eliminate this types of variation
+only orthographically normalized forms are used throughout the
+dataset. All variants (dialectal, tonal, phonetic etc.) of the same
+lemma were transformed into the canonical form, which is
+operationalized as a first variant listed for a lexical entry in the
+Bamadaba dictionary.\fxerror{Link to Bamadaba}  
+
 % FIXME: find a way to keep glosses in data?
+To make the most of the structural information available in the
+annotation, the basic positional skipgrams model presented above is
+supplemented with the n-grams based on the morpheme-level grammatical
+information. To keep data sparsity at a manageable level the principle
+of limiting the right-hand side of the n-grams to the closed-class and
+frequent phenomena was observed (see section~\ref{sec:definition} for
+details). Thus out of the morpheme-level annotation layer only
+morphological tags from a standard list of glosses were taken into
+account. The resulting list of skipgrams includes the pairs of the
+following form:
+\begin{itemize}
+\item wordform (or lemma) — part of speech tag + position
+\item part of speech tag — part of speech tag + position
+\item wordform (or lemma) — standard gloss + position
+\item standard gloss — standard gloss + position
+\end{itemize}
+Numerals and punctuation are not included as the left-hand side items
+in the n-grams, but may appear as positional collocates on the
+right-hand side.  The context window width for building skipgrams is
+defined to be five tokens on each side of the word, but is not allowed
+to cross sentence boundaries.
 
 % variants of data: lemmatized; wordforms; morpheme-based(?)
 % sequences; tonal/non-tonal
+For the convenience of the dataset users, the skipgram frequency data
+is presented in the several variants. First, the data is split
+according to the basic lexical item used for building skipgrams that
+is either an orthographically normalized wordform, or a canonical
+lemma. Second, frequency data on both wordfrom-based and lemma-based
+skipgrams are presented in two forms: an aggregated variant showing
+total counts for a whole corpus, and a disaggregated variant showing
+document-level frequencies. 
 
-% war on sparsity
+% data format
+The data is presented in a text-based tabular formats. Skipgram
+frequency tables are in the TSV (tab separated values) format and
+contain the following columns:
+\begin{itemize}
+\item lexical item, tag or standard gloss;
+\item its positional collocate;
+\item total frequency of the lexical item/tag/gloss;
+\item total frequency of the collocate;
+\item frequency of the co-occurrence of the item with the collocate
+  (n-gram frequency).
+\end{itemize}
+In the document-level frequency data an additional column with the
+document id precedes the list.  Document-level metadata are provided
+as a separate CSV-file that can be linked to the document-level
+skipgram frequency tables based on the value of the document id
+field. 
 
-% decisions on skipgrams building: to keep sparsity at a manageable
-% levels (not to make connections between too open classes)
+% FIXME: example of the data
+
+% some basic descriptive statistics
+% number of n-grams, lexicon size (words/lemmas)
+% hapax legomena share(?)
 
 \section{Possible applications}
 \label{sec:applications}
@@ -142,8 +393,12 @@ name.
 
 \subsection{Positional distributions}
 
+% gosi—bugo
 
 \subsection{Stylometry}
+
+% the idea of the ngram profile for the authorship classification
+
 
 % cf. Sidorov ch. 6
 
@@ -151,7 +406,32 @@ name.
 
 \subsection{Word embeddings}
 
+Corpus size is the main limiting factor. Even in the effort to cover
+as many languages as possible (157) Bambara is not
+included. (Wikipedia size)
+
+% https://meta.wikimedia.org/wiki/List_of_Wikipedias
+% https://bm.wikipedia.org/w/index.php?title=Sp%C3%A9cial:Statistiques&action=raw
+
+% SIZE 661 content pages (52436 words total)
+no easily accessable data 
+
 % DISCUSSION — ?
+\section{Discussion}
+
+why bother with positional, when we have traditional?  because of data
+sparsity. normal skip-grams deliberately throw out information encoded
+in the exact positioning of words in data, regarding it as noise. this
+may indeed work so when amount of data is large. but when the data is
+relatively scarce, we do not enjoy the effects of central limit
+theorem, we much more experience the ...ies of sampling errors with
+sparse word data. If traditionally lexicon is seen as signal, and
+syntax as noise, in this work I suggest to switch sides. In annotated
+data, expectation is that local surface structures are result of
+interpretation and a more reliable and broad, than lexis. 
+
+% more general appliccability of the approach : if there are
+% some pos-tagged data
 
 % extensive testing required to measure performance on various NLP
 % tasks (and to localize appropriately the sources of the gains)
@@ -206,3 +486,113 @@ In an easily quantifiable and simultaneously interpretable manner.
 To retain readability by a human as well  as a machine. An aggregated
 presentation of meaningful linguistic information.
 
+“occurring directly before pm”
+
+To reiterate, (recapitulate), the objectives are ...
+* 
+
+% data sparsity problem and a suggested solution
+we do not list words on the right-hand side of n-grams. The focus is
+on the recurrent phenomena that may include PoS tags, grammatical
+morphemes, etc. 
+
+
+We presume that for each token there is a lemma (normalized wordform),
+and a part of speech tag (or we can use a lemma, or a wordform as a
+token).
+
+% example sentence
+
+% tokens
+% ps
+% positional tags
+% (translation?)
+
+
+To capture explicit syntactic structure we may add tag of the word on
+top of the 
+
+
+
+% keep positional info
+
+% integrate grammatical forms 
+
+% comparable and interpretable lists
+
+% 
+
+that I tentatively call positional skipgrams for the lack of a better
+name.
+
+building n-grams along the dimensions of syntax instead
+of sequence. The obvious downside of the idea is that we need a
+reliable syntactic parser for it to work.
+
+% Syntactic n-grams Sidorov etc. and similar
+find a way to compensate for the simplifying (simplistic) way of
+treating context relationships (just sequences) that reduces any
+syntactic structure just to the plain sequence. a drive to collect
+ever more data for language modeling (GPT-2?)
+
+two opposing trends: collect more data, induce less structure
+(Mikolov), let the data amount compensate for the noise
+
+
+ limits the scope of syntactic
+ phenomena they are able to represent
+ 
+as even more general
+where positional variation is also neglected.  the popularity of the
+term rocketed with the advent of deep learning algorithms word2vec.
+
+% skipgram term (made popular by word2vec)
+The term skip-gram popularized by Mikolov in 2013, now used in a more
+general sense, when counting non directly adjacent words 
+
+Various flavors of n-grams were used
+over decades in the literature, making comprehensive survey a hopeless
+task. 
+
+Customarily the default setting for collecting n-grams 
+
+The default setting for collecting word n-grams in most applications 
+
+made its way into word-level language modeling no later than 2006. 
+
+later was generalized to include skipgrams (the term can
+be traced back at least to 2006). later generalized to words /
+language modeling
+
+
+This trend
+emphasizes the power of the model to induce semantic relationships
+with a lot of unannotated data.
+
+
+On the one side, available linguistic annotation is leveraged to 
+
+on one side we incorporate lingustic annnotation 
+
+Rely on the shared context 
+
+which is arguably a way to go with low-resourced languages 
+
+our approach stands somewhere in between, let the positional
+collocates keep track of the similarities
+
+% PROBLEM: insensitiveness to word order
+
+% models without word order info suboptimal for tasks involving syntax
+% (Two/simple) “what words go where” / “what words go together”
+% formulation. Each of the output matrixes is dedicated to predicting
+% theoutput for a specific relative position to the center word.
+
+% We present two simple modifications to the models in the popular
+% Word2Vec tool, in or- der to generate embeddings more suited to
+% tasks involving syntax.
+
+
+% Plehach — poetry
+
+% pedagogical resource for language learners (phraseology)
