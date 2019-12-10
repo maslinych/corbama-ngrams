@@ -6,6 +6,7 @@
 \babeltags{ru = russian}
 \usepackage[style=authoryear]{biblatex}
 \usepackage[noglossbreaks]{covington}
+\usepackage{booktabs}
 % \usepackage{lmodern}
 %\babelfont{rm}{DejaVu Serif}
 \babelfont{rm}{Gentium Basic}
@@ -92,12 +93,8 @@ a sentence. % Which, I argue, make aggregated and comparative data
 The article is structured as follows. Sections
 \ref{sec:definition}--\ref{sec:data} explain the methodology and data
 used for constructing n-grams for Bambara, followed by section
-\ref{sec:applications} with brief illustrations of how the
-n-gram data presented here may be employed in corpus-based linguistic
-research, as well as a sample application for a natural language
-processing task — building a word-embedding model.  The closing
-section presents a discussion of...\fxerror{Bzzzt!}
-
+\ref{sec:applications} with brief illustrations of how the n-gram data
+presented here may be employed in corpus-based linguistic research.
 
 \section{Positional Skipgrams}
 \label{sec:definition}
@@ -394,106 +391,340 @@ field.
 \label{sec:applications}
 
 % meant as a demonstration
+This section presents a few examples of the ways in which information
+contained in the positional skipgrams can be rearranged and explored
+to address linguistic queries. The statistical processing of the data
+in the examples is intentionally kept to a minimum, in order to
+demonstrate conceptual simplicity and interpretability that the lists
+of positional skipgrams can offer by themselves.  The examples
+presented in this section do not in any sense form an exhaustive list
+of the uses for positional skipgrams for linguistics or natural
+language processing, they are meant to serve just as illustrations of
+the possible applications.
 
-\subsection{Positional distributions}
+\subsection{Lexical comparison}
+%% ALT title: 
 
 % gosi—bugo
-% В качестве пар слов можно взять, во-1, те же самые bùgɔ и gòsi.
+Lets start with the simple query on lexical semantics where the
+application of the positional skipgrams is quite straightforward.  In
+Bambara, there is a pair of moderately frequent verbs, \textit{gòsi}
+and \textit{bùgɔ}, both of which mean ‘to hit’. Having corpus data at
+hand, we may make inferences about the semantic differences of these
+two verbs based on the differences in their context distributions.  In
+addition to the traditional reading of the concordance for both verbs,
+positional skipgrams can offer a summary of morphosyntactic positions of
+each verb together with frequency statistics (see table~\ref{tab:bugogosi.freq}). 
 
-% bùgɔ_v  v:0     187     188431  187
-% bùgɔ_v  pm:-2   187     146505  126
-% bùgɔ_v  pers:-1 187     179651  76
-% bùgɔ_v  c:1     187     130483  64
-% bùgɔ_v  pers:-3 187     145917  55
-% bùgɔ_v  3SG:-1  187     81640   43
-% bùgɔ_v  INF:-2  187     49982   42
-% bùgɔ_v  n:-1    187     309187  38
+\begin{table}
+  \small
+  \centering
+  \begin{tabular}{llrrr}
+    \toprule
+    item & collocate & freq1 & freq2 & ngram\\
+    \midrule
+    bùgɔ\_v & v:0 & 187 & 188431 & 187\\
+    bùgɔ\_v & pm:-2 & 187 & 146505 & 126\\
+    bùgɔ\_v & pers:-1 & 187 & 179651 & 76\\
+    bùgɔ\_v & c:1 & 187 & 130483 & 64\\
+    bùgɔ\_v & pers:-3 & 187 & 145917 & 55\\
+    bùgɔ\_v & 3SG:-1 & 187 & 81640 & 43\\
+    bùgɔ\_v & INF:-2 & 187 & 49982 & 42\\
+    bùgɔ\_v & n:-1 & 187 & 309187 & 38\\
+    \addlinespace
+    gòsi\_v & v:0 & 285 & 188431 & 285\\
+    gòsi\_v & pm:-2 & 285 & 146505 & 179\\
+    gòsi\_v & n:-1 & 285 & 309187 & 91\\
+    gòsi\_v & PFV.TR:-2 & 285 & 21125 & 84\\
+    gòsi\_v & num:3 & 285 & 20081 & 75\\
+    gòsi\_v & n.prop:-1 & 285 & 41012 & 74\\
+    gòsi\_v & conj:2 & 285 & 45496 & 73\\
+    gòsi\_v & pers:-1 & 285 & 179651 & 71\\
+    \bottomrule
+  \end{tabular}
+  
+  \caption{Top-8 frequent positional skipgrams for \textit{bùgɔ} and
+    \textit{gòsi}. Columns indicate: \textit{freq1} — the frequency of
+    the verb itself, \textit{freq2} — total frequency of a collocate
+    in a corpus, \textit{ngram} — frequency of co-occurrence of a
+    collocate with the verb}
+  \label{tab:bugogosi.freq}
+\end{table}
 
-% gòsi_v  v:0     285     188431  285
-% gòsi_v  pm:-2   285     146505  179
-% gòsi_v  n:-1    285     309187  91
-% gòsi_v  PFV.TR:-2       285     21125   84
-% gòsi_v  num:3   285     20081   75
-% gòsi_v  n.prop:-1       285     41012   74
-% gòsi_v  conj:2  285     45496   73
-% gòsi_v  pers:-1 285     179651  71
+The data in the table~\ref{tab:bugogosi.freq} essentially presents an
+excerpt from the unaltered table of aggregated counts of positional
+skipgrams on the whole Bambara corpus. The only operations needed to
+get such a view are just proper filtering (all lines including
+\textit{gòsi\_v} and \textit{bùgɔ\_v}) and sorting (in the descending
+order of skipgram frequency). Yet even this simple frequency list
+immediately reveals differences in use that point to the semantic
+contrast between these two lexical items. While the first two
+positions in the list for both verbs are trivial in that they just
+reflect the part of speech and the position of the verb in a clause
+(\mbox{S AUX O V}), the third position is of particular interest
+because it refers the position of the direct object, and is different
+for the two verbs. Taken together, all n-grams that refer to that
+position in the top of the lists indicate, that for \textit{bùgɔ},
+personal pronouns (especially 3SG) dominate over nouns in the position
+of the direct object, while for \textit{gòsi} the position of a direct
+object is more equally distributed among nouns, proper nouns, and
+personal pronouns. Thus a hypothesis may be formulated that
+\textit{bùgɔ} is preferred when talking about hitting people, while
+\textit{gòsi} is more general and probably more suitable in talking
+about hitting objects.
 
-for bugo, personal pronouns dominate over nouns in the previous
-position (direct object) 
-for gosi, the position of a direct object is much more equally distributed among n, n.prop, and pers
+Interpretation of raw frequency data may be suggestive, but is in most
+cases problematic. While frequencies of the two verbs in question are
+on the same order of magnitude, they still differ by a factor of 1.5,
+which makes numbers in two lists not directly comparable. A more
+principled way to identify differences in usage would require some
+sort of a statistical model that takes into account the differences in
+frequencies. There are plenty of approaches to this task in natural
+language processing. For the purposes of this demonstration we adopt a
+weighted log-odds model suggested in ...\fxerror{CITE}. This method
+evaluates the logarithm of odds ratio of two frequencies, but makes a
+correction for the sampling error thus putting more weight on those
+frequency differences that are supported by more evidence
+(examples). 
 
-affinity to the perfective construction for gosi, and infinitive
-construction for bugɔ
+\begin{table}
+  \small
+  \centering
+  \begin{tabular}{llrrr}
+    \toprule
+    collocate & ngram\_bùgɔ\_v & ngram\_gòsi\_v & log\_odds\_gòsi\_v\\
+    \midrule
+    TOP:-1 & 2 & 67 & 3.69\\
+    n.prop:-1 & 13 & 74 & 2.87\\
+    PFV.TR:-2 & 28 & 84 & 2.03\\
+    n:-1 & 38 & 91 & 1.59\\
+    v:-2 & 4 & 20 & 1.40\\
+    \addlinespace
+    prn:-1 & 25 & 9 & -2.16\\
+    RECP:-1 & 13 & 2 & -2.00\\
+    NOM.F:-1 & 10 & 1 & -1.87\\
+    pers:-1 & 76 & 71 & -1.48\\
+    PFV.NEG:-2 & 11 & 4 & -1.43\\
+    \bottomrule
+  \end{tabular}
+  
+  \caption{Collocates for the two preceding positions for
+    \textit{gòsi} and \textit{bùgɔ}, ordered by weighted
+    log-odds. Positive log-odds indicate prevalence of a collocate
+    with \textit{gòsi}, negative — with \textit{bùgɔ}. Only collocates
+    with overall frequency of 10 or more are included in the list}
+  \label{tab:bugogosi.lo}
+\end{table}
 
+Table~\ref{tab:bugogosi.lo} shows a list of the positional collocates
+in the two preceding positions for both verbs, ranked by the magnitude
+of the frequency difference as evaluated by weighted
+log-odds.\footnote{The computation was performed using tidylo R
+  package (CITE).} These data support the observation that pronouns
+preferentially occur in the position of the direct object with
+\textit{bùgɔ}. The list also demonstrates that most of the proper
+nouns that fill the position of the direct object for \textit{gòsi}
+are toponyms.
 
-% Ещё хорошая пара: dɔ́gɔman - mìsɛn "маленький" (или дериват последнего mìsɛnman - даже не знаю, что лучше. Или всю троицу?).
-% Или вот:
-% bèlebele - bònba (можно также  bèlebeleba) "большой".
+The above example demonstrates that positional skipgrams may serve as
+a tool to focus the attention and guide the analysis of differences in
+lexical usage, though they cannot directly show what the difference
+is. In particular, it helps to construct specific hypotheses in terms
+of the positional collocates. The tentative hypotheses built using
+positional skipgrams may be further explored with a classical
+concordance or a more sophisticated statistical modeling.
 
-
-\subsection{Stylometry}
+\subsection{Subcorpora comparison}
 
 % the idea of the ngram profile for the authorship classification
-
-
 % cf. Sidorov ch. 6
 
+Analysis of positional skipgrams need not be limited to the individual
+lexical units. The n-gram frequency easily lends itself to aggregation
+by any relevant metatextual properties. As a result, it is easy to
+obtain a frequency list of positional skipgrams for a subcorpus of
+texts that are comparable in some respect. In effect, this method
+allows to compare positional distributions of lexical items and
+grammatical tags across genres, time periods, regions, etc.
+
+The idea that a frequency list of n-grams for a certain corpus
+characterizes the language variety used in the texts is not new. In
+the literature on natural language processing and on stylometry it is
+known as \textit{n-gram profile}. N-gram profiles can be used to
+formally distinguish between different language varieties, provided
+that corresponding textual corpora are available to collect n-grams.
+It was successfully applied, for instance, in the tasks of detecting
+language by script (with character n-grams)\fxerror{Ref: textcat}, and
+in authorship attribution\fxerror{Ref: see Plechac}.
+
 % newspapers vs. epic poetry
+In the following example, two subsets of the Bambara corpus are
+contrasted using n-gram profiles built from the positional skipgrams:
+folkloric texts versus news articles. These two broad genres can be
+reasonably expected to differ in many respects of language use, some
+of which should clearly manifest itself in the prevailing syntactic
+patterns as well as in frequency distributions of part of speech tags,
+grammatical categories, and lexical items. The point is not to use
+positional skipgrams in a statistical classification setting
+(predictive modeling), but to employ them as a guide for the search of
+linguistically meaningful contrasts in language use.
 
-\subsection{Word embeddings}
+% general freq results
+% a look into log-odds (what it shows us)
+The disambiguated part of the Bambara corpus contains 148 files
+classified as folklore (0.25M words in total), and 834 files news
+articles (0.36M words). The n-gram profiles for the two subcorpora
+were built using the file-level positional-skipgrams data and the
+metadata table. Even the quick inspection of the top-frequency
+skipgrams lists for the two genres shows the appreciable difference in
+the syntactic patterns of the two subcorpora. Folkloric subcorpus has
+first person singular pronoun \textit{à} as the most frequent feature,
+top-10 is dominated by n-grams involving verbs and personal
+pronouns. Contrariwise, all top-10 n-grams for news include a noun,
+and most consists of two nouns in some positional relationship. The
+third person singular occurs on 13th line only. This clearly attests
+to the higher frequency of nouns and longer noun groups. Weighted
+log-odds test discussed in the previous section when applied to the
+folklore/news dichotomy confirms that the syntactic differences in the
+narrative and reported speech versus noun groups is the most prominent
+contrast (see table~\ref{tab:folknews.lo}).
 
-Corpus size is the main limiting factor. Even in the effort to cover
-as many languages as possible (157) Bambara is not
-included. (Wikipedia size)
+\begin{table}
+  \centering
+  \begin{tabular}{lrrrr}
+    \toprule
+    skipgram & log\_odds\_folk & log\_odds\_news & f\_folk & f\_news\\
+    \midrule
+    pers -- pers:-2 & 30.58 & -30.58 & 7046 & 3716\\
+    pers -- pm:1 & 30.11 & -30.11 & 10572 & 7216\\
+    kó\_cop -- pers:-1 & 28.69 & -28.69 & 2640 & 463\\
+    pers -- v:3 & 28.23 & -28.23 & 7694 & 4752\\
+    3SG -- QUOT:1 & 27.19 & -27.19 & 2156 & 286\\
+    kó\_cop -- 3SG:-1 & 27.18 & -27.18 & 2155 & 286\\
+    \midrule
+    n -- n:1 & -28.66 & 28.66 & 5435 & 17621\\
+    n.prop -- n.prop:1 & -25.79 & 25.79 & 608 & 5200\\
+    n -- num:1 & -25.56 & 25.56 & 1780 & 8243\\
+    n.prop -- n.prop:2 & -24.17 & 24.17 & 339 & 3978\\
+    n -- n:4 & -23.66 & 23.66 & 7075 & 18918\\
+    \bottomrule
+  \end{tabular}
+  
+  \caption{Skipgrams most characteristic of folklore and news
+    subcorpora, ordered by weighted log-odds}
+  \label{tab:folknews.lo}
+\end{table}
 
-% https://meta.wikimedia.org/wiki/List_of_Wikipedias
-% https://bm.wikipedia.org/w/index.php?title=Sp%C3%A9cial:Statistiques&action=raw
+% a specific inquiry into NMLZ (silter NMLZ)
+The same data and method may be used to explore subtler differences
+between these subcorpora, and to test more specific hypotheses about
+their differences. As an example, nominalized forms can be taken,
+since they are expected to be much more prominent in news. To get an
+overview of the differences between folklore and news in respect to
+nominalizations, it suffices to filter the skipgrams list to get the
+lines containing a reference to the nominalization marker (standard
+gloss — \textit{NMLZ}). The differences here are not so pronounced,
+but they do exist (see table~\ref{tab:nmlz}). 
 
-% SIZE 661 content pages (52436 words total)
-no easily accessable data 
+\begin{table}
+  \centering
+  \begin{tabular}{lrrrr}
+    \toprule
+    skipgram & log\_odds\_folk & log\_odds\_news & f\_folk & f\_news\\
+    \midrule
+    sɔ̀sɔli\_n -- NMLZ:0 & 2.48 & -2.48 & 19 & 3\\
+    dún\_n -- NMLZ:0 & 2.03 & -2.03 & 141 & 139\\
+    nà\_v -- NMLZ:1 & 1.73 & -1.73 & 13 & 4\\
+    kòlijí\_n -- NMLZ:0 & 1.53 & -1.53 & 10 & 3\\
+    IPFV.NEG -- NMLZ:1 & 1.47 & -1.47 & 20 & 12\\
+    \midrule
+    PL -- NMLZ:1 & -11.83 & 11.83 & 18 & 741\\
+    NMLZ -- PP:1 & -7.83 & 7.83 & 36 & 419\\
+    yé\_pp -- NMLZ:-1 & -7.83 & 7.83 & 36 & 419\\
+    lá\_pp -- NMLZ:-1 & -7.53 & 7.53 & 81 & 526\\
+    NMLZ -- ADR:1 & -7.33 & 7.33 & 27 & 353\\
+    ni\_conj -- NMLZ:2 & -6.74 & 6.74 & 3 & 230\\
+\bottomrule
+\end{tabular}
+
+  \caption{Skipgrams that include nominalization, ordered by the
+    weighted log-odds difference between folklore and news. Items with
+    overall frequency less than 10 are omitted}
+  \label{tab:nmlz}
+\end{table}
+
+% \subsection{Word embeddings}
+
+% Corpus size is the main limiting factor. Even in the effort to cover
+% as many languages as possible (157) Bambara is not
+% included. (Wikipedia size)
+
+% % https://meta.wikimedia.org/wiki/List_of_Wikipedias
+% % https://bm.wikipedia.org/w/index.php?title=Sp%C3%A9cial:Statistiques&action=raw
+
+% % SIZE 661 content pages (52436 words total)
+% no easily accessable data 
 
 % DISCUSSION — ?
-\section{Discussion}
+% \section{Discussion}
+\section{Conclusion}
 
-why bother with positional, when we have traditional?  because of data
-sparsity. normal skip-grams deliberately throw out information encoded
-in the exact positioning of words in data, regarding it as noise. this
-may indeed work so when amount of data is large. but when the data is
-relatively scarce, we do not enjoy the effects of central limit
-theorem, we much more experience the ...ies of sampling errors with
-sparse word data. If traditionally lexicon is seen as signal, and
-syntax as noise, in this work I suggest to switch sides. In annotated
-data, expectation is that local surface structures are result of
-interpretation and a more reliable and broad, than lexis. 
+This article presented a new dataset built using
+morphologically-annotated and manually disambiguated subcorpus of the
+Bambara Reference Corpus, and demonstrated several ways in which this
+dataset may help in formulating linguistic hypotheses on various
+contrasts present in textual data. This quantitative data (with
+metadata) that enables testing hypotheses and building models based on
+lexico-grammatical distributions in various parts of the corpus.  The
+goal of publication of this dataset is to provide wider audience with
+access to the data on linguistic regularities observed in the Bambara
+corpus for the linguistic research and development of NLP
+applications.
+
+The data is organized in the form of the frequency lists of
+\textit{positional skipgrams} -- a framework for building n-grams
+suggested in this article. These n-grams capture information about
+co-occurrence of lexical items with grammatical categories at various
+relative positions. This framework was introduced instead of the more
+traditional approaches to n-gram building in order to alleviate the
+problem of data sparsity. Traditional word-level skip-grams
+deliberately throw out information encoded in the exact positioning of
+words in the data, regarding it as noise. This may indeed work so when
+amount of data is large. But when the data is relatively scarce,
+sampling errors with sparse lexical items is a very serious
+concern. If traditionally in co-occurrence analysis lexicon is seen as
+signal, and syntax as noise, in this work I suggest to switch
+sides. By tracking positional co-occurrences with higher-level
+grammatical categories with positional skipgrams, patterns of the
+local surface structures emerge that stem from the information
+obtained using dictionaries and human language competence. This can
+provide statistical signal more reliable and broad than plain lexical
+co-occurrence. 
 
 % more general appliccability of the approach : if there are
 % some pos-tagged data
 
 % extensive testing required to measure performance on various NLP
 % tasks (and to localize appropriately the sources of the gains)
+The approach suggested is suited well to a less-resourced settings
+where overall textual data is not easily available, but some annotated
+texts are present. For linguists, positional skipgrams may serve as an
+exploratory tool which, much like the concordance, reorganizes the
+textual data in a non-linear fasion that allows to see
+regularities. It is suggested not to replace, but to supplement other
+views of the corpus, including online search and concordancing.
 
-\section{Conclusion}
+% As a tool to guide inquiry, a supplement to the standard
+% concordancing, frequency-list building and collocation-list building.
 
-Goals and uses of the published data: targeted linguistic explorations
-and comparisons, quantitative corpus-based research/data, further NLP
-applications. 
-
-As a tool to guide inquiry, a supplement to the standard
-concordancing, frequency-list building and collocation-list building.
-
-As quantitative data (with metadata) that enables testing hypotheses
-and building models based on lexico-grammatical distributions in
-various corpus parts. 
-
-As a resource to enable further NLP processing (training models
-etc.).
-
-make another way to access and play with corpus statistics in addition
-to the existing online search interface
 
 \end{document}
 
 %%% TRASH
+
+
+make another way to access and play with corpus statistics in addition
+to the existing online search interface
 
 Such an inclusive view effectively allows to employ n-grams to
 
@@ -632,3 +863,67 @@ collocates keep track of the similarities
 % Plehach — poetry
 
 % pedagogical resource for language learners (phraseology)
+
+affinity to the perfective construction for gosi, and infinitive
+construction for bugɔ
+
+
+
+To conclude this example, 
+
+
+% Ещё хорошая пара: dɔ́gɔman - mìsɛn "маленький" (или дериват последнего mìsɛnman - даже не знаю, что лучше. Или всю троицу?).
+% Или вот:
+% bèlebele - bònba (можно также  bèlebeleba) "большой".
+cannot answer directly what is the difference, but  can
+
+drive where to look for studying lexical asymmetry in usage
+
+
+, much like the
+concordance. evven further search with a concordance (check all
+constructions). an exploratoty method
+
+% \begin{table}
+%   \small
+%   \centering
+%   \begin{tabular}{llrrr}
+%     \toprule
+%     item & collocate & freq1 & freq2 & ngram\\
+%     \midrule
+%     à\_pers & pers:0 & 18648 & 39499 & 18648\\
+%     à\_pers & 3SG:0 & 18648 & 18663 & 18647\\
+%     v & pm:-2 & 37724 & 26353 & 12865\\
+%     pm & v:2 & 29212 & 33479 & 12865\\
+%     n & pp:1 & 54241 & 22541 & 11710\\
+%     \addlinespace
+%     pp & n:-1 & 23099 & 49095 & 11710\\
+%     pers & pm:1 & 39499 & 27479 & 10572\\
+%     pm & pers:-1 & 29212 & 39315 & 10572\\
+%     pers & v:1 & 39499 & 36833 & 10350\\
+%     v & pers:-1 & 37724 & 39315 & 10350\\
+%     \bottomrule
+%   \end{tabular}
+
+%   \begin{tabular}{llrrr}
+% \toprule
+% item & collocate & freq1 & freq2 & ngram\\
+% \midrule
+% n & pp:1 & 100419 & 40825 & 22465\\
+% pp & n:-1 & 43739 & 86581 & 22465\\
+% n & n:2 & 100419 & 76057 & 21025\\
+% n & n:-2 & 100419 & 73873 & 21025\\
+% n & n:-3 & 100419 & 70615 & 19977\\
+% \addlinespace
+% n & n:3 & 100419 & 69858 & 19977\\
+% n & n:-4 & 100419 & 65871 & 18918\\
+% n & n:4 & 100419 & 64904 & 18918\\
+% n & n:-1 & 100419 & 86581 & 17621\\
+% n & n:1 & 100419 & 80189 & 17621\\
+% \bottomrule
+% \end{tabular}
+
+%   \caption{Most frequent positional skipgrams for folklore and news
+%     subcorpora}
+%   \label{tab:folknews.freq}
+% \end{table}
