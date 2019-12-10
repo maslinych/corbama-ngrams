@@ -197,7 +197,7 @@ downstream computational tasks.
   include n-grams consisting of two positional tags alongside
   positional skipgrams with words. For instance, accumulating
   frequency counts for \textit{n:0--pm:1} would help track the
-  fact that nouns tend to fill the position before the predicative
+  fact that nouns tend to fill the position before predicative
   markers as an integral part of the data.
 \end{enumerate} 
 
@@ -324,7 +324,7 @@ operators.
 % type of annotation, grammar lists
 The annotation layers available in this subcorpus include the
 orthographically normalized token (part of the corpus is in the
-old\fxwarning{pre-1986?} Bambara orthography), lemma, part of speech
+old Bambara orthography), lemma, part of speech
 tag, and a gloss (lexical equivalent) in French. For multi-morpheme
 words there is also a recursive structure that annotates each morpheme
 with the similar attributes of a form, a part of speech tag, and a
@@ -420,14 +420,14 @@ demonstrate conceptual simplicity and interpretability that the lists
 of positional skipgrams can offer by themselves.  The examples
 presented in this section do not in any sense form an exhaustive list
 of the uses for positional skipgrams for linguistics or natural
-language processing, they are meant to serve just as illustrations of
-the possible applications.
+language processing; they are meant to serve just as illustrations of
+possible applications.
 
 \subsection{Lexical comparison}
 %% ALT title: 
 
 % gosi—bugo
-Lets start with the simple query on lexical semantics where the
+Lets start with a simple query on lexical semantics where the
 application of the positional skipgrams is quite straightforward.  In
 Bambara, there is a pair of moderately frequent verbs, \textit{gòsi}
 and \textit{bùgɔ}, both of which mean ‘to hit’. Having corpus data at
@@ -464,10 +464,10 @@ each verb together with frequency statistics (see table~\ref{tab:bugogosi.freq})
     \bottomrule
   \end{tabular}
   
-  \caption{Top-8 frequent positional skipgrams for \textit{bùgɔ} and
+  \caption{Top 8 frequent positional skipgrams for \textit{bùgɔ} and
     \textit{gòsi}. Columns indicate: \textit{freq1} — the frequency of
-    the verb itself, \textit{freq2} — total frequency of a collocate
-    in a corpus, \textit{ngram} — frequency of co-occurrence of a
+    the verb itself; \textit{freq2} — total frequency of a collocate
+    in a corpus; \textit{ngram} — frequency of co-occurrence of a
     collocate with the verb}
   \label{tab:bugogosi.freq}
 \end{table}
@@ -475,7 +475,7 @@ each verb together with frequency statistics (see table~\ref{tab:bugogosi.freq})
 The data in the table~\ref{tab:bugogosi.freq} essentially presents an
 excerpt from the unaltered table of aggregated counts of positional
 skipgrams on the whole Bambara corpus. The only operations needed to
-get such a view are just proper filtering (all lines including
+get this view are just proper filtering (all lines including
 \textit{gòsi\_v} and \textit{bùgɔ\_v}) and sorting (in the descending
 order of skipgram frequency). Yet even this simple frequency list
 immediately reveals differences in use that point to the semantic
@@ -483,7 +483,7 @@ contrast between these two lexical items. While the first two
 positions in the list for both verbs are trivial in that they just
 reflect the part of speech and the position of the verb in a clause
 (\mbox{S AUX O V}), the third position is of particular interest
-because it refers the position of the direct object, and is different
+because it reflects the position of the direct object, and is different
 for the two verbs. Taken together, all n-grams that refer to that
 position in the top of the lists indicate, that for \textit{bùgɔ},
 personal pronouns (especially 3SG) dominate over nouns in the position
@@ -497,7 +497,7 @@ about hitting objects.
 Interpretation of raw frequency data may be suggestive, but is in most
 cases problematic. While frequencies of the two verbs in question are
 on the same order of magnitude, they still differ by a factor of 1.5,
-which makes numbers in two lists not directly comparable. A more
+which makes numbers in the two lists not directly comparable. A more
 principled way to identify differences in usage would require some
 sort of a statistical model that takes into account the differences in
 frequencies. There are plenty of approaches to this task in natural
@@ -540,7 +540,7 @@ frequency differences that are supported by more evidence
 Table~\ref{tab:bugogosi.lo} shows a list of the positional collocates
 in the two preceding positions for both verbs, ranked by the magnitude
 of the frequency difference as evaluated by weighted
-log-odds.\footnote{The computation was performed using tidylo R
+log-odds.\footnote{The computation was performed using the tidylo R
   package \autocite{silge2019tidylo}.} These data support the observation that pronouns
 preferentially occur in the position of the direct object with
 \textit{bùgɔ}. The list also demonstrates that most of the proper
@@ -553,7 +553,7 @@ lexical usage, though they cannot directly show what the difference
 is. In particular, it helps to construct specific hypotheses in terms
 of the positional collocates. The tentative hypotheses built using
 positional skipgrams may be further explored with a classical
-concordance or a more sophisticated statistical modeling.
+concordance or more sophisticated statistical modeling.
 
 \subsection{Subcorpora comparison}
 
@@ -565,7 +565,7 @@ lexical units. The n-gram frequency easily lends itself to aggregation
 by any relevant metatextual properties. As a result, it is easy to
 obtain a frequency list of positional skipgrams for a subcorpus of
 texts that are comparable in some respect. In effect, this method
-allows to compare positional distributions of lexical items and
+allows for comparison of positional distributions of lexical items and
 grammatical tags across genres, time periods, regions, etc.
 
 The idea that a frequency list of n-grams for a certain corpus
@@ -574,39 +574,39 @@ the literature on natural language processing and on stylometry it is
 known as \textit{n-gram profile}. N-gram profiles can be used to
 formally distinguish between different language varieties, provided
 that corresponding textual corpora are available to collect n-grams.
-It was successfully applied, for instance, in the tasks of detecting
+It was successfully applied, for instance, in tasks to detect
 language by script (with character n-grams) \autocite{cavnar1994n}, and
 in authorship attribution \autocite{koppel2003exploiting}.
 
 % newspapers vs. epic poetry
 In the following example, two subsets of the Bambara corpus are
-contrasted using n-gram profiles built from the positional skipgrams:
+contrasted using n-gram profiles built from positional skipgrams:
 folkloric texts versus news articles. These two broad genres can be
 reasonably expected to differ in many respects of language use, some
 of which should clearly manifest itself in the prevailing syntactic
 patterns as well as in frequency distributions of part of speech tags,
 grammatical categories, and lexical items. The point is not to use
 positional skipgrams in a statistical classification setting
-(predictive modeling), but to employ them as a guide for the search of
+(predictive modeling), but to employ them as a guide in the search for
 linguistically meaningful contrasts in language use.
 
 % general freq results
 % a look into log-odds (what it shows us)
 The disambiguated part of the Bambara corpus contains 148 files
-classified as folklore (0.25M words in total), and 834 files news
+classified as folklore (0.25M words in total), and 834 files of news
 articles (0.36M words). The n-gram profiles for the two subcorpora
 were built using the file-level positional-skipgrams data and the
-metadata table. Even the quick inspection of the top-frequency
-skipgrams lists for the two genres shows the appreciable difference in
-the syntactic patterns of the two subcorpora. Folkloric subcorpus has
-first person singular pronoun \textit{à} as the most frequent feature,
-top-10 is dominated by n-grams involving verbs and personal
-pronouns. Contrariwise, all top-10 n-grams for news include a noun,
-and most consists of two nouns in some positional relationship. The
-third person singular occurs on 13th line only. This clearly attests
-to the higher frequency of nouns and longer noun groups. Weighted
-log-odds test discussed in the previous section when applied to the
-folklore/news dichotomy confirms that the syntactic differences in the
+metadata table. Even a quick inspection of the top-frequency
+skipgrams lists for the two genres shows an appreciable difference in
+the syntactic patterns of the two subcorpora. The folkloric subcorpus has
+the first person singular pronoun \textit{à} as the most frequent feature
+and the top 10 is dominated by n-grams involving verbs and personal
+pronouns. Contrariwise, all top 10 n-grams for news include a noun,
+and most of them consist of two nouns in some positional relationship. The
+third person singular occurs only on the 13th line. This clearly attests
+to the higher frequency of nouns and longer noun groups. When the weighted
+log-odds test discussed in the previous section is applied to the
+folklore/news dichotomy, it confirms that the syntactic differences in the
 narrative and reported speech versus noun groups is the most prominent
 contrast (see table~\ref{tab:folknews.lo}).
 
@@ -691,48 +691,48 @@ but they do exist (see table~\ref{tab:nmlz}).
 \section{Conclusion}
 
 This article presented a new dataset built using
-morphologically-annotated and manually disambiguated subcorpus of the
+a morphologically-annotated and manually disambiguated subcorpus of the
 Bambara Reference Corpus, and demonstrated several ways in which this
-dataset may help in formulating linguistic hypotheses on various
+dataset may help in formulating linguistic hypotheses about various
 contrasts present in textual data. This quantitative data (with
-metadata) that enables testing hypotheses and building models based on
+metadata) enables testing hypotheses and building models based on
 lexico-grammatical distributions in various parts of the corpus.  The
-goal of publication of this dataset is to provide wider audience with
+goal of publication of this dataset is to provide a wider audience with
 access to the data on linguistic regularities observed in the Bambara
-corpus for the linguistic research and development of NLP
+corpus for linguistic research and development of NLP
 applications.
 
-The data is organized in the form of the frequency lists of
-\textit{positional skipgrams} -- a framework for building n-grams
-suggested in this article. These n-grams capture information about
-co-occurrence of lexical items with grammatical categories at various
-relative positions. This framework was introduced instead of the more
-traditional approaches to n-gram building in order to alleviate the
-problem of data sparsity. Traditional word-level skip-grams
-deliberately throw out information encoded in the exact positioning of
-words in the data, regarding it as noise. This may indeed work so when
-amount of data is large. But when the data is relatively scarce,
-sampling errors with sparse lexical items is a very serious
-concern. If traditionally in co-occurrence analysis lexicon is seen as
-signal, and syntax as noise, in this work I suggest to switch
-sides. By tracking positional co-occurrences with higher-level
+The data is organized in the form of frequency lists of
+\textit{positional skipgrams}, which is a framework for building
+n-grams suggested in this article. These n-grams capture information
+about co-occurrence of lexical items with grammatical categories at
+various relative positions. This framework was introduced instead of
+the more traditional approaches to n-gram building in order to
+alleviate the problem of data sparsity. Traditional word-level
+skip-grams deliberately throw out information encoded in the exact
+positioning of words in the data, regarding it as noise. This may
+indeed work when there is a large amount of data. But when the data is
+relatively scarce, sampling errors with sparse lexical items is a very
+serious concern. Traditionally, co-occurrence analysis treats lexicon
+as signal and syntax as noise, whereas in this work I suggest to
+switch sides. By tracking positional co-occurrences with higher-level
 grammatical categories with positional skipgrams, patterns of the
 local surface structures emerge that stem from the information
 obtained using dictionaries and human language competence. This can
-provide statistical signal more reliable and broad than plain lexical
-co-occurrence. 
+provide a statistical signal that is more reliable and broad than
+plain lexical co-occurrence.
 
 % more general appliccability of the approach : if there are
 % some pos-tagged data
 
 % extensive testing required to measure performance on various NLP
 % tasks (and to localize appropriately the sources of the gains)
-The approach suggested is suited well to a less-resourced settings
-where overall textual data is not easily available, but some annotated
+The approach suggested is suited well to less-resourced settings
+where overall textual data is not easily available but some annotated
 texts are present. For linguists, positional skipgrams may serve as an
 exploratory tool which, much like the concordance, reorganizes the
-textual data in a non-linear fasion that allows to see
-regularities. It is suggested not to replace, but to supplement other
+textual data in a non-linear fasion in order to reveal
+regularities. This is intended not to replace, but to supplement other
 views of the corpus, including online search and concordancing.
 
 % As a tool to guide inquiry, a supplement to the standard
