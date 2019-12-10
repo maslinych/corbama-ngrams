@@ -57,25 +57,28 @@ $3 == 1 {
 	delete lemma
 	delete gloss
 }
-# every row
-{ xpos[$3] = $6 ; lemma[$3] = $5 ; c = $3; docid = $1; token_freq[$5 "_" $6] += 1 }
-$7 != "_" { gloss[$3] = $7 }
 # end of document
 $1 != docid { 
 	if (bydoc) {
 		for (j in ngrams) {
 			for (k in ngrams[j]) {
-				print j, k, token_freq[j], token_freq[k], ngrams[j][k] 
+				print docid, j, k, token_freq[j], token_freq[k], ngrams[j][k] 
 				}
 			}
 		delete ngrams
 		delete token_freq
 	}
 }
+# every row
+{ xpos[$3] = $6 ; lemma[$3] = $5 ; c = $3; docid = $1; token_freq[$5 "_" $6] += 1 }
+$7 != "_" { gloss[$3] = $7 }
 # end of data
 END {
 	for (j in ngrams) {
 		for (k in ngrams[j]) {
+			if (bydoc) {
+				printf "%s\t", docid
+			}
 			print j, k, token_freq[j], token_freq[k], ngrams[j][k] 
 			}
 		}
