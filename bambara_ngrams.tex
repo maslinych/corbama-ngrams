@@ -494,19 +494,51 @@ personal pronouns. Thus a hypothesis may be formulated that
 \textit{gòsi} is more general and probably more suitable in talking
 about hitting objects.
 
-Interpretation of raw frequency data may be suggestive, but is in most
-cases problematic. While frequencies of the two verbs in question are
-on the same order of magnitude, they still differ by a factor of 1.5,
-which makes numbers in the two lists not directly comparable. A more
-principled way to identify differences in usage would require some
-sort of a statistical model that takes into account the differences in
-frequencies. There are plenty of approaches to this task in natural
-language processing. For the purposes of this demonstration we adopt a
-weighted log-odds model suggested in \textcite{monroe2008}. This method
-evaluates the logarithm of odds ratio of two frequencies, but makes a
-correction for the sampling error thus putting more weight on those
+Interpretation of raw frequency data may be suggestive, but it is
+misleading in many cases. While frequencies of the two verbs in
+question are on the same order of magnitude, they still differ by a
+factor of 1.5, which makes numbers in the two lists not directly
+comparable. A more principled way to identify differences in usage
+would require some sort of a statistical model that takes into account
+the differences in frequencies. There are plenty of approaches to this
+task in natural language processing. For the purposes of this
+demonstration we adopt a weighted log-odds model suggested in
+\textcite{monroe2008}.
+
+To put it simply, the weighted log odds method is used to compare
+relative frequencies of two events. For the sake of example, let's
+consider the frequency of occurrence of the personal pronoun before
+the verbs \textit{bùgɔ} and \textit{gòsi}, respectively. The values of
+these frequencies can be found in the rows for \textit{pers:-1}
+collocate in the table~\ref{tab:bugogosi.freq}. To decide which verb
+personal pronouns co-occur with more often, the overall frequencies of
+the verbs should be taken into account. This can be done by
+transforming frequencies into odds, that is the ratio of the number of
+cases when there is a pronoun in that position to the number of cases
+when there is something else. This gives us $76:(187-76)=0.68$ for
+bùgɔ, and $71:(285-71)=0.33$ for \textit{gòsi}. By taking the ratio of
+these two values (the odds ratio), we immediately find that personal
+pronouns are approximately two times more likely to occur before bùgɔ
+than before gòsi. It is conventional to take the logarithm of the odds
+ratio (log-odds) to make the measurement symmetrical with respect to
+the order of values. In the example above, if we were to divide odds
+for gòsi by odds for bùgɔ, the result would be close to 1/2. But the
+logarithm of 2 is 0.69 while the logarithm of 1/2 is -0.69, which
+reflects the fact that the magnitude of the difference is the same in
+both cases, and the sign indicates whether the feature in question is
+preferred or avoided by the verb that is on top of the ratio.  The
+important intuition behind the \textit{weighted} log odds is that for
+rare events we may observe the frequencies 2 and 1 that produce the
+same $2:1$ ratio, but this observation is much less reliable compared
+to the case of observed frequencies of, for instance, 100 and 50. The
+magnitude and even the direction of difference in the former case is
+more likely to be due to sampling error. Hence the method includes a
+correction term in the formula that puts more weight on those
 frequency differences that are supported by more evidence
-(examples). 
+(examples). The values of the weighted log odds for gòsi vs. bùgɔ are
+shown in the last column of table~\ref{tab:bugogosi.lo}. Positive
+values indicate the prevalence of the collocate with gòsi, and
+negative values correspond to higher co-occurrence rate with bùgɔ.
 
 \begin{table}[ht]
   \small
