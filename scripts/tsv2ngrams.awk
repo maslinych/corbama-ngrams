@@ -1,5 +1,7 @@
 #!/usr/bin/gawk
-BEGIN {back_window=5; front_window=5; FS="\t"; OFS="\t"; c=0; split("", xglosses)}
+BEGIN {back_window=5; front_window=5; FS="\t"; OFS="\t"; c=0; split("", xglosses)
+    if (useword) { base = "word" } else { base = "lemma" }
+}
 # throw out rows of incorrect format
 NF != 7 {next}
 # end of sentece processing
@@ -22,10 +24,10 @@ $3 == 1 {
 					tagpos = xpos[i] ":" pos
 				}
 				lemmapos = lemma[t] "_" xpos[t]
-				ngrams[lemmapos][tagpos,"lemma-tag"] += 1
+				ngrams[lemmapos][tagpos,base "-tag"] += 1
 				token_freq[tagpos] += 1
 				if (reverse) {
-                                    ngrams[tagpos][lemmapos,"tag-lemma"] += 1
+                                    ngrams[tagpos][lemmapos,"tag-" base] += 1
 				}
 				if (pos != 0) {
                                     ngrams[xpos[t]][tagpos,"tag-tag"] += 1
@@ -34,7 +36,7 @@ $3 == 1 {
 					split(gloss[i], posglosses, "|")
 					for (g in posglosses) {
 						glosspos = posglosses[g] ":" pos
-						ngrams[lemmapos][glosspos,"lemma-gloss"] += 1
+						ngrams[lemmapos][glosspos,base "-gloss"] += 1
 						#ngrams[xpos[t]][glosspos] += 1
 						token_freq[glosspos] += 1
 						if (pos != 0 && length(xglosses) > 0) {
@@ -71,7 +73,16 @@ $1 != docid {
 	}
 }
 # every row
-{ xpos[$3] = $6 ; lemma[$3] = $5 ; c = $3; docid = $1; token_freq[$5 "_" $6] += 1 }
+{ 
+    if (useword) {
+        lemma[$3] = $4
+    } else {
+        lemma[$3] = $5 }
+    xpos[$3] = $6
+    c = $3
+    docid = $1
+    token_freq[$5 "_" $6] += 1
+}
 $7 != "_" { gloss[$3] = $7 }
 # end of data
 END {

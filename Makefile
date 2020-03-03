@@ -21,6 +21,12 @@ data/%.lemma.tsv: data/%.lemma.vert scripts/vert2tsv.awk
 results/%.lemma.tsv: data/%.lemma.tsv scripts/tsv2ngrams.awk
 	gawk -f scripts/tsv2ngrams.awk $< | sort -nr -k5 -k3 -k4 > $@
 
+results/%.word.tsv: data/%.lemma.tsv scripts/tsv2ngrams.awk
+	gawk -f scripts/tsv2ngrams.awk -v useword=1 $< | sort -nr -k5 -k3 -k4 > $@
+
+results/%.word.bydoc.tsv: data/%.lemma.tsv scripts/tsv2ngrams.awk
+	gawk -f scripts/tsv2ngrams.awk -v useword=1 -v bydoc=1 $< | sort -k1,1 -k6,6nr > $@
+
 results/%.lemma.bydoc.tsv: data/%.lemma.tsv scripts/tsv2ngrams.awk
 	gawk -f scripts/tsv2ngrams.awk -v bydoc=1 $< | sort -k1,1 -k6,6nr > $@
 
