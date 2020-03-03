@@ -2,6 +2,8 @@ MANDE=../../lab/mande
 DABA=$(MANDE)/daba/daba
 makelexicon=PYTHONPATH=$(MANDE):$(DABA) python $(DABA)/ad-hoc/tt-make-lexicon.py
 corpus=$(MANDE)/corbama-build
+metafields=_auto:words _auto:sentences text:title source:type source:date corpus:adddate source:year text:script source:title text:date source:address text:genre text:medium text:translation text:theme source:pagetotal text:pages source:number source:editor corpus:operator author:name author:sex author:native_lang source:publisher corpus:sponsor source:url text:rubric text:transcription text:original_lang author:dialect text:transldata source:misc author:addon author:birth_year author:spelling
+
 
 test:
 	$(MAKE) -s -C $(corpus) print-netfiles-fullpath | tr " " "\n" | grep .  
@@ -10,7 +12,8 @@ results/metadata.dump:
 	$(MAKE) -C $(corpus) print-netfiles-fullpath | tr " " "\n" | grep .  | while read f ; do metaprint -a "$$f" ; done > $@
 
 results/metadata.tsv:
-	make -s -C $(corpus) print-netfiles-fullpath | tr " " "\n" | grep .  | while read f ; do metaprint -d "	" -a "$$f" ; done > $@
+	echo "fileid	" "$(metafields)" | tr " " "	" > $@
+	make -s -C $(corpus) print-netfiles-fullpath | tr " " "\n" | grep .  | while read f ; do metaprint -d "	" $(patsubst %,-f % ,$(metafields)) "$$f" ; done | sed 's,/home[^\\t]corbama/,,' >> $@
 
 data/%.lemma.tsv: data/%.lemma.vert scripts/vert2tsv.awk
 	gawk -f scripts/vert2tsv.awk $< > $@
