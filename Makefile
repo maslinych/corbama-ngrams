@@ -3,7 +3,7 @@ DABA=$(MANDE)/daba/daba
 makelexicon=PYTHONPATH=$(MANDE):$(DABA) python $(DABA)/ad-hoc/tt-make-lexicon.py
 corpus=$(MANDE)/corbama-build
 metafields=_auto:words _auto:sentences text:title source:type source:date corpus:adddate source:year text:script source:title text:date source:address text:genre text:medium text:translation text:theme source:pagetotal text:pages source:number source:editor corpus:operator author:name author:sex author:native_lang source:publisher corpus:sponsor source:url text:rubric text:transcription text:original_lang author:dialect text:transldata source:misc author:addon author:birth_year author:spelling
-
+datafiles=$(patsubst %,results/corbama-net-tonal.%,lemma.tsv lemma.bydoc.tsv word.tsv word.bydoc.tsv)
 
 test:
 	$(MAKE) -s -C $(corpus) print-netfiles-fullpath | tr " " "\n" | grep .  
@@ -34,11 +34,17 @@ results/%.lemma.bydoc.tsv: data/%.lemma.tsv scripts/tsv2ngrams.awk
 results/corbama-net-tonal.lemma.counts.tsv: data/corbama-net-tonal.tsv scripts/ngram.count.awk
 	cat $< | gawk -f scripts/ngram.count.awk | sort -nr -k5 > $@
 
+README.html: README.md
+	pandoc -t html $< > $@
+
 %.ppmi.csv: %.counts.tsv
 	python3 scripts/sppmi.vec.py $< $@
 
 lexicon-bamadaba.txt:
 	$(makelexicon) -r $(corpus)/run/ | LC_ALL=bm_ML sort > $@
+
+dataset: $(datafiles) results/metadata.tsv README.html
+	zip -j -r ngrams-corbama-net-tonal-$(shell date +%Y%m%d).zip $^
 
 # join -j1 data/folk.sorted results/corbama-net-tonal.lemma.bydoc.tsv > results/folk.lemma.bydoc.tsv
 # join -j1 data/news.sorted results/corbama-net-tonal.lemma.bydoc.tsv > results/news.lemma.bydoc.tsv
