@@ -27,7 +27,7 @@ This dataset is made available under the Open Data Commons Attribution
 License: <http://opendatacommons.org/licenses/by/1.0>
 
 The current version of the dataset is available at: 
-<http://cormand.huma-num.fr/ngrams/corbama-net-tonal-latest.zip>
+<http://cormand.huma-num.fr/ngrams/ngrams-corbama-net-tonal-latest.zip>
 
 The source code for the dataset generation, and for the paper is
 available at: <http://github.com/maslinych/corbama-ngrams>
